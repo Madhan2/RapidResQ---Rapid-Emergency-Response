@@ -1,97 +1,105 @@
 "use client"
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { EmergencyType, EmergencySeverity } from '@/lib/types';
-import { 
-  Flame, 
-  Activity, 
-  Car, 
-  AlertCircle,
-  CheckCircle2,
-  Loader2
-} from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle,
-  DialogTrigger 
-} from '@/components/ui/dialog';
+import { Loader2 } from 'lucide-react';
 
 interface SOSButtonProps {
-  onTrigger: (type: EmergencyType, severity: EmergencySeverity) => void;
+  onTrigger: () => void;
   isLoading?: boolean;
 }
 
 export const SOSButton: React.FC<SOSButtonProps> = ({ onTrigger, isLoading }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [triggered, setTriggered] = useState(false);
+  const [isPressing, setIsPressing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const emergencyTypes: { type: EmergencyType; icon: any; label: string; color: string }[] = [
-    { type: 'accident', icon: Car, label: 'Accident', color: 'bg-orange-500' },
-    { type: 'cardiac', icon: Activity, label: 'Cardiac', color: 'bg-red-500' },
-    { type: 'fire', icon: Flame, label: 'Fire', color: 'bg-red-600' },
-    { type: 'other', icon: AlertCircle, label: 'Other', color: 'bg-blue-500' },
-  ];
+  const HOLD_DURATION = 2000; // 2 seconds
 
-  const handleTrigger = (type: EmergencyType) => {
-    onTrigger(type, 'high');
-    setTriggered(true);
-    setIsOpen(false);
-    setTimeout(() => setTriggered(false), 5000);
+  const startPress = () => {
+    if (isLoading) return;
+    setIsPressing(true);
+    setProgress(0);
+
+    const startTime = Date.now();
+    intervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / HOLD_DURATION) * 100, 100);
+      setProgress(newProgress);
+    }, 10);
+
+    timerRef.current = setTimeout(() => {
+      onTrigger();
+      cancelPress();
+    }, HOLD_DURATION);
   };
 
+  const cancelPress = () => {
+    setIsPressing(false);
+    setProgress(0);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  };
+
+  useEffect(() => {
+    return () => cancelPress();
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full gap-6">
-      {!triggered ? (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <button
-              className={cn(
-                "relative group flex items-center justify-center w-48 h-48 rounded-full bg-primary text-white font-bold text-3xl transition-all active:scale-95 sos-glow pulse-animation",
-                isLoading && "opacity-50 pointer-events-none"
-              )}
-            >
-              <div className="flex flex-col items-center">
-                {isLoading ? <Loader2 className="w-12 h-12 animate-spin mb-2" /> : "SOS"}
-                <span className="text-xs font-normal uppercase tracking-widest mt-1 opacity-80">
-                  {isLoading ? "Reporting..." : "Tap to help"}
-                </span>
-              </div>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-card border-border">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center mb-4">Select Emergency Type</DialogTitle>
-            </DialogHeader>
-            <div className="grid grid-cols-2 gap-4">
-              {emergencyTypes.map((item) => (
-                <Button
-                  key={item.type}
-                  variant="outline"
-                  className={cn(
-                    "flex flex-col items-center justify-center h-32 gap-3 rounded-2xl border-2 border-border hover:border-primary hover:bg-primary/10 transition-all",
-                  )}
-                  onClick={() => handleTrigger(item.type)}
-                >
-                  <item.icon className={cn("w-10 h-10", item.type === 'cardiac' ? "text-red-500" : "text-primary")} />
-                  <span className="font-semibold text-lg">{item.label}</span>
-                </Button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <div className="flex flex-col items-center animate-in zoom-in duration-300">
-          <div className="w-48 h-48 rounded-full bg-secondary flex items-center justify-center mb-4">
-            <CheckCircle2 className="w-24 h-24 text-primary" />
-          </div>
-          <h2 className="text-2xl font-bold text-secondary">Emergency Sent!</h2>
-          <p className="text-muted-foreground text-center">Help is on the way. Stay calm.</p>
+    <div className="relative flex items-center justify-center">
+      {/* Progress Ring */}
+      <svg className="absolute w-64 h-64 -rotate-90 pointer-events-none">
+        <circle
+          cx="128"
+          cy="128"
+          r="120"
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          className="text-muted"
+        />
+        <circle
+          cx="128"
+          cy="128"
+          r="120"
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          strokeDasharray={754}
+          strokeDashoffset={754 - (754 * progress) / 100}
+          className={cn(
+            "text-primary transition-all duration-75",
+            progress === 100 ? "text-secondary" : "text-primary"
+          )}
+        />
+      </svg>
+
+      <button
+        onMouseDown={startPress}
+        onMouseUp={cancelPress}
+        onMouseLeave={cancelPress}
+        onTouchStart={startPress}
+        onTouchEnd={cancelPress}
+        className={cn(
+          "relative w-56 h-56 rounded-full bg-primary text-white font-black text-5xl transition-all active:scale-95 sos-glow select-none outline-none ring-offset-4 ring-offset-background focus:ring-4 ring-primary",
+          isPressing && "scale-105",
+          isLoading && "opacity-50 pointer-events-none"
+        )}
+      >
+        <div className="flex flex-col items-center">
+          {isLoading ? (
+            <Loader2 className="w-16 h-16 animate-spin" />
+          ) : (
+            <>
+              <span>SOS</span>
+              <span className="text-xs font-bold uppercase tracking-widest mt-2 opacity-80">
+                {isPressing ? "HOLDING..." : "PRESS & HOLD"}
+              </span>
+            </>
+          )}
         </div>
-      )}
+      </button>
     </div>
   );
 };

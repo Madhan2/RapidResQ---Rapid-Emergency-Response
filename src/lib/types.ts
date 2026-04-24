@@ -1,4 +1,4 @@
-export type EmergencyType = 'accident' | 'cardiac' | 'fire' | 'other';
+export type EmergencyType = 'accident' | 'medical' | 'fire' | 'crime' | 'other';
 export type EmergencySeverity = 'low' | 'medium' | 'high';
 export type EmergencyStatus = 'pending' | 'responding' | 'resolved';
 
@@ -19,7 +19,7 @@ export interface Emergency {
   potentialHazards?: string;
 }
 
-export type ResponderType = 'ambulance' | 'volunteer' | 'hospital';
+export type ResponderType = 'ambulance' | 'volunteer' | 'hospital' | 'police';
 
 export interface Responder {
   id: string;
@@ -30,6 +30,7 @@ export interface Responder {
     lng: number;
   };
   availability: boolean;
+  distance?: string;
 }
 
 export interface UserProfile {

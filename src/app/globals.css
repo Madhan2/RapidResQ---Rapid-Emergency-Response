@@ -4,31 +4,26 @@
 
 @layer base {
   :root {
-    --background: 197 15% 10%;
+    --background: 0 0% 7%;
     --foreground: 0 0% 100%;
-    --card: 197 15% 12%;
+    --card: 0 0% 10%;
     --card-foreground: 0 0% 100%;
-    --popover: 197 15% 12%;
+    --popover: 0 0% 10%;
     --popover-foreground: 0 0% 100%;
-    --primary: 198 90% 50%;
+    --primary: 0 64% 50%; /* #D32F2F Red */
     --primary-foreground: 0 0% 100%;
-    --secondary: 169 76% 62%;
-    --secondary-foreground: 197 15% 10%;
-    --muted: 197 15% 20%;
-    --muted-foreground: 197 5% 70%;
-    --accent: 169 76% 62%;
-    --accent-foreground: 197 15% 10%;
+    --secondary: 142 70% 45%; /* Green for Safe/Connected */
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 45 90% 50%; /* Yellow for Warning */
+    --accent-foreground: 0 0% 10%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 197 15% 20%;
-    --input: 197 15% 20%;
-    --ring: 198 90% 50%;
-    --radius: 0.75rem;
-    --chart-1: 198 90% 50%;
-    --chart-2: 169 76% 62%;
-    --chart-3: 0 84% 60%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 64% 50%;
+    --radius: 1rem;
   }
 }
 
@@ -42,7 +37,7 @@
 }
 
 .sos-glow {
-  box-shadow: 0 0 20px rgba(13, 169, 242, 0.4), 0 0 40px rgba(13, 169, 242, 0.2);
+  box-shadow: 0 0 30px rgba(211, 47, 47, 0.4), 0 0 60px rgba(211, 47, 47, 0.2);
 }
 
 .pulse-animation {
@@ -52,14 +47,14 @@
 @keyframes pulse {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(13, 169, 242, 0.7);
+    box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7);
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 15px rgba(13, 169, 242, 0);
+    box-shadow: 0 0 0 25px rgba(211, 47, 47, 0);
   }
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(13, 169, 242, 0);
+    box-shadow: 0 0 0 0 rgba(211, 47, 47, 0);
   }
 }
