@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RapidResQ---Rapid-Emergency-Response
 RapidResQ is a real-time emergency response platform that connects users, nearby responders, and critical resources to reduce response time during emergencies using Firebase and location-based services.
 
@@ -139,3 +140,10 @@ Aligned with:
 ## 📜 License
 
 [Choose an appropriate open-source license]
+=======
+# Firebase Studio
+
+This is a NextJS starter in Firebase Studio.
+
+To get started, take a look at src/app/page.tsx.
+>>>>>>> firebase-repo/main
